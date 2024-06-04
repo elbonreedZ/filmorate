@@ -47,4 +47,3 @@ db/*
 
 checkstyle.xml
 suppressions.xml
-src/main/resources
