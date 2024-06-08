@@ -8,20 +8,21 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
     private static final LocalDate FOUNDATION_OF_FILMS = LocalDate.of(1895, 12, 28);
+
+    private int idCounter;
     private final Map<Integer, Film> films = new HashMap<>();
 
     @GetMapping
-    public Collection<Film> getAll() {
-        return films.values();
+    public List<Film> getAll() {
+        log.info("Запрос на получение списка всех фильмов");
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping
@@ -68,11 +69,6 @@ public class FilmController {
     }
 
     private int getNextId() {
-        int currentMaxId = films.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++idCounter;
     }
 }

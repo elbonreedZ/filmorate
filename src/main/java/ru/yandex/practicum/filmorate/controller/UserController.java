@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -13,11 +14,14 @@ import java.util.*;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
+
+    private int idCounter;
     private final Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
-    public Collection<User> getAll() {
-        return users.values();
+    public List<User> getAll() {
+        log.info("Запрос на получение списка всех пользователей");
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping
@@ -74,11 +78,6 @@ public class UserController {
     }
 
     private int getNextId() {
-        int currentMaxId = users.keySet()
-                .stream()
-                .mapToInt(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
+        return ++idCounter;
     }
 }
