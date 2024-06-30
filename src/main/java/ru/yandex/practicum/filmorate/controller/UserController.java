@@ -20,6 +20,7 @@ public class UserController {
     @GetMapping
     public List<User> getAll() {
         log.info("Запрос на получение списка всех пользователей");
+        log.info("Возврат списка всех пользователей");
         return new ArrayList<>(users.values());
     }
 
