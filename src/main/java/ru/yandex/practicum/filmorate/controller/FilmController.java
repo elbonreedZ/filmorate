@@ -22,6 +22,7 @@ public class FilmController {
     @GetMapping
     public List<Film> getAll() {
         log.info("Запрос на получение списка всех фильмов");
+        log.info("Возврат списка всех фильмов");
         return new ArrayList<>(films.values());
     }
 
