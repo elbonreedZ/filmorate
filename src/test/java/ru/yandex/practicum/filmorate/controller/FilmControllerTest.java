@@ -1,35 +1,23 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
+
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(FilmController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class FilmControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private WebApplicationContext context;
-
-    @BeforeEach
-    public void setup() {
-        this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-    }
 
 
     @Test
@@ -48,12 +36,13 @@ public class FilmControllerTest {
     }
 
     @Test
-    public void testAddFilmWithInvalidReleaseDate() {
-        Film film = Film.builder().name("Valid Name").description("Valid description")
-                .duration(12L).releaseDate(LocalDate.of(1785, 12, 5))
-                .build();
-        FilmController filmController = new FilmController();
-        Assertions.assertThrows(ValidationException.class, () -> filmController.add(film));
+    public void testAddFilmWithInvalidReleaseDate() throws Exception {
+        String invalidReleaseDateFilmJson = "{ \"name\": \"Valid Name\", \"description\": \"Valid description\", \"duration\": 12, \"releaseDate\": \"1785-12-05\" }";
+
+        mockMvc.perform(post("/films")
+                        .contentType("application/json")
+                        .content(invalidReleaseDateFilmJson))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
@@ -77,7 +66,7 @@ public class FilmControllerTest {
                 + "\"name\":\"\","
                 + "\"description\":\"Valid description\","
                 + "\"releaseDate\":\"2022-01-01\","
-                + "\"duration\":\"PT2H30M\""
+                + "\"duration\":\"30\""
                 + "}";
 
         this.mockMvc.perform(post("/films")
@@ -93,7 +82,7 @@ public class FilmControllerTest {
                 + "\"description\":\"А ещё явные признаки " +
                 "победы институционализации являются только методом политического участия и преданы социально-демократической анафеме. Есть над чем задуматься: многие известные личности представлены в исключительно положительном свете.\","
                 + "\"releaseDate\":\"2022-01-01\","
-                + "\"duration\":\"PT2H30M\""
+                + "\"duration\":\"20\""
                 + "}";
 
         this.mockMvc.perform(post("/films")
