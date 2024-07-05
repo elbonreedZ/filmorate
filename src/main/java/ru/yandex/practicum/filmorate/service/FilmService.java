@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class FilmService {
 
     private final FilmStorage filmStorage;
+    private final UserStorage userStorage;
 
     public Film like(int id, int userId) {
         log.trace("Получение фильма по id");
@@ -23,6 +26,11 @@ public class FilmService {
         if (film == null) {
             log.error("Фильм с id = {} не найден", id);
             throw new NotFoundException(String.format("Фильм с id = %d не найден", id));
+        }
+        User user = userStorage.getById(userId);
+        if (user == null) {
+            log.error("Пользователь с id = {} не найден", userId);
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
         log.trace("Получение списка лайков");
         Set<Integer> likes = film.getLikes();
@@ -41,6 +49,11 @@ public class FilmService {
         if (film == null) {
             log.error("Фильм с id = {} не найден", id);
             throw new NotFoundException(String.format("Фильм с id = %d не найден", id));
+        }
+        User user = userStorage.getById(userId);
+        if (user == null) {
+            log.error("Пользователь с id = {} не найден", userId);
+            throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
         log.trace("Получение списка лайков");
         Set<Integer> likes = film.getLikes();
