@@ -75,12 +75,6 @@ public class UserService {
         log.trace("Получение списков друзей");
         Set<Integer> friends = user.getFriends();
         Set<Integer> friendsOfFriend = friend.getFriends();
-        if (!friends.contains(friendId)) {
-            log.error("Пользователь, которого пытаются удалить из друзей с id = {} не найден в списке друзей", friendId);
-            throw new NotFoundException(String.format(
-                    "Пользователь, которого пытаются удалить из друзей с id = %d не найден в списке друзей", friendId)
-            );
-        }
         log.trace("Удаление друга");
         friends.remove(friendId);
         friendsOfFriend.remove(userId);
