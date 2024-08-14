@@ -1,20 +1,22 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.api.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.api.UserStorage;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class FilmService {
 
@@ -23,18 +25,20 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    public Film like(int id, int userId) {
-        Film film = filmStorage.getById(id);
-        if (film == null) {
-            log.error("Фильм с id = {} не найден", id);
-            throw new NotFoundException(String.format("Фильм с id = %d не найден", id));
-        }
-        User user = userStorage.getById(userId);
-        if (user == null) {
+
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+        this.filmStorage = filmStorage;
+        this.userStorage = userStorage;
+    }
+
+    public Film like(long id, long userId) {
+        Film film = getById(id);
+        Optional<User> user = userStorage.getById(userId);
+        if (user.isEmpty()) {
             log.error("Пользователь с id = {} не найден", userId);
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
-        Set<Integer> likes = film.getLikes();
+        Set<Long> likes = film.getLikes();
         likes.add(userId);
         film.setLikes(likes);
         filmStorage.update(film);
@@ -42,23 +46,18 @@ public class FilmService {
         return film;
     }
 
-    public Film deleteLike(int id, int userId) {
-        Film film = filmStorage.getById(id);
-        if (film == null) {
-            log.error("Фильм с id = {} не найден", id);
-            throw new NotFoundException(String.format("Фильм с id = %d не найден", id));
-        }
-        User user = userStorage.getById(userId);
-        if (user == null) {
+    public void deleteLike(long id, long userId) {
+        Film film = getById(id);
+        Optional<User> user = userStorage.getById(userId);
+        if (user.isEmpty()) {
             log.error("Пользователь с id = {} не найден", userId);
             throw new NotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
-        Set<Integer> likes = film.getLikes();
+        Set<Long> likes = film.getLikes();
         likes.remove(userId);
         film.setLikes(likes);
         filmStorage.update(film);
         log.info("Лайк успешно удалён: {}", film);
-        return film;
     }
 
     public List<Film> getMostPopular(int count) {
@@ -89,8 +88,9 @@ public class FilmService {
         return updated;
     }
 
-    public Film delete(int id) {
-        return filmStorage.delete(id);
+    public void delete(long id) {
+        filmStorage.delete(id);
+        log.info("Фильм с id = {} успешно удалён", id);
     }
 
     public List<Film> getAll() {
@@ -98,13 +98,12 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public Film getById(int id) {
-        Film film = filmStorage.getById(id);
-        if (film == null) {
+    public Film getById(long id) {
+        Optional<Film> filmOpt = filmStorage.getById(id);
+        if (filmOpt.isEmpty()) {
             log.error("Фильм с id = {} не найден", id);
             throw new NotFoundException(String.format("Фильм с id = %d не найден", id));
         }
-        log.info("Фильм получен: {}", film);
-        return film;
+        return filmOpt.get();
     }
 }

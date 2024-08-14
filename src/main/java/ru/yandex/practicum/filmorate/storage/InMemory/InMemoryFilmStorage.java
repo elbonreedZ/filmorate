@@ -1,18 +1,21 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.InMemory;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.api.FilmStorage;
 
 import java.util.*;
 
 @Slf4j
 @Component
+@Qualifier("InMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private int idCounter;
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final Map<Long, Film> films = new HashMap<>();
 
     @Override
     public List<Film> getAll() {
@@ -41,7 +44,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film delete(int id) {
+    public void delete(long id) {
         Film film = films.get(id);
         if (film == null) {
             log.error("Фильм с id = {} не найден", id);
@@ -49,15 +52,14 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
         films.remove(id);
         log.info("Фильм с id = {} успешно удалён", id);
-        return film;
     }
 
     @Override
-    public Film getById(int id) {
-        return films.get(id);
+    public Optional<Film> getById(long id) {
+        return Optional.ofNullable(films.get(id));
     }
 
-    private int getNextId() {
+    private long getNextId() {
         return ++idCounter;
     }
 }

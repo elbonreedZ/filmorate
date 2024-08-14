@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.mappers.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -38,21 +40,23 @@ public class FilmController {
     }
 
     @DeleteMapping("/{id}")
-    public Film delete(@PathVariable int id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable long id) {
         log.info("Запрос на удаление фильма: id = {}", id);
-        return filmService.delete(id);
+        filmService.delete(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
-    public Film like(@PathVariable int id, @PathVariable int userId) {
+    public Film like(@PathVariable long id, @PathVariable long userId) {
         log.info("Запрос на добавление лайка фильму с id = {} от пользователя с id = {}", id, userId);
         return filmService.like(id, userId);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    public Film deleteLike(@PathVariable int id, @PathVariable int userId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.info("Запрос на удаление лайка фильму с id = {} от пользователя с id = {}", id, userId);
-        return filmService.deleteLike(id, userId);
+        filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
@@ -62,9 +66,11 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film getById(@PathVariable int id) {
+    public FilmDto getById(@PathVariable int id) {
         log.info("Запрос на получение фильма c id: {}", id);
-        return filmService.getById(id);
+        FilmDto filmDto = FilmMapper.mapToFilmDto(filmService.getById(id));
+        log.info("Фильм получен: {}", filmDto);
+        return filmDto;
     }
 
 }
