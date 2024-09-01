@@ -77,6 +77,5 @@ public class FriendsDbStorage extends BaseDbStorage<User> {
     public void deleteFriend(long userId, long friendId) {
         String deleteQuery = "DELETE FROM relations WHERE initiator_id = ? AND target_user_id = ?";
         jdbc.update(deleteQuery, friendId, userId);
-        //я без понятия как пройти тесты, наставник не отвечает
     }
 }

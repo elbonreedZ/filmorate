@@ -33,29 +33,20 @@ public class UserService {
             throw new IllegalArgumentException("Пользователь не может добавить в друзья сам себя");
         }
         User user = getById(userId);
-        User friend = getById(friendId);
         Set<Long> friends = user.getFriends();
-        Set<Long> friendsOfFriend = friend.getFriends();
         friends.add(friendId);
-        friendsOfFriend.add(userId);
         user.setFriends(friends);
-        friend.setFriends(friendsOfFriend);
         userStorage.update(user);
-        userStorage.update(friend);
         log.info("Друг успешно добавлен: {}", user);
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto deleteFriend(long userId, long friendId) {
-        User user = getById(userId);
-        User friend = getById(friendId);
-        Set<Long> friends = user.getFriends();
+    public UserDto deleteFriend(long initiatorId, long targetId) {
+        User user = getById(initiatorId);
+        User friend = getById(targetId);
         Set<Long> friendsOfFriend = friend.getFriends();
-        friends.remove(friendId);
-        friendsOfFriend.remove(userId);
-        user.setFriends(friends);
+        friendsOfFriend.remove(initiatorId);
         friend.setFriends(friendsOfFriend);
-        userStorage.update(user);
         userStorage.update(friend);
         log.info("Друг успешно удалён: {}", user);
         return UserMapper.mapToUserDto(user);
