@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.storage.api.LikesStorage;
-import ru.yandex.practicum.filmorate.storage.dal.LikesDbStorage;
 
 import java.util.Set;
 
@@ -11,6 +10,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class LikeService {
     private final LikesStorage likesStorage;
+
     public void like(long filmId, long userId) {
         likesStorage.like(filmId, userId);
     }

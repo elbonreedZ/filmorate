@@ -11,6 +11,7 @@ import java.util.List;
 @Service
 public class FriendService {
     private final FriendsStorage friendsStorage;
+
     public List<User> getUserFriends(long userId) {
         return friendsStorage.getUserFriends(userId);
     }

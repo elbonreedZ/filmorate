@@ -5,19 +5,16 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.service.GenreService;
 import ru.yandex.practicum.filmorate.storage.dal.GenresDbStorage;
-import ru.yandex.practicum.filmorate.storage.dal.RatingDbStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
 public class FilmRowMapper implements RowMapper<Film> {
     private final GenresDbStorage genresDbStorage;
+
     @Override
     public Film mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         Film film = new Film();

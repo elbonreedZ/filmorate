@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.api.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.dal.GenresDbStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class GenreService {
         return GenreMapper.mapToGenreDto(genre.get());
     }
 
-    public void addFilmGenre(long filmId, long genreId ) {
+    public void addFilmGenre(long filmId, long genreId) {
         genreStorage.addFilmGenre(filmId, genreId);
     }
 

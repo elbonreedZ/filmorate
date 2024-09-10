@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.RatingMapper;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.api.RatingStorage;
-import ru.yandex.practicum.filmorate.storage.dal.RatingDbStorage;
 
 import java.util.List;
 import java.util.Optional;
