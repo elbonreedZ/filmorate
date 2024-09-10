@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dto.FriendDto;
-import ru.yandex.practicum.filmorate.dto.UserDto;
+import ru.yandex.practicum.filmorate.dto.ResponseUserDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.mappers.FriendMapper;
@@ -27,7 +27,7 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public UserDto addFriend(long userId, long friendId) {
+    public User addFriend(long userId, long friendId) {
         if (userId == friendId) {
             log.error("Пользователь не может добавить в друзья сам себя");
             throw new IllegalArgumentException("Пользователь не может добавить в друзья сам себя");
@@ -37,19 +37,17 @@ public class UserService {
         friends.add(friendId);
         user.setFriends(friends);
         userStorage.update(user);
-        log.info("Друг успешно добавлен: {}", user);
-        return UserMapper.mapToUserDto(user);
+        return user;
     }
 
-    public UserDto deleteFriend(long initiatorId, long targetId) {
+    public User deleteFriend(long initiatorId, long targetId) {
         User user = getById(initiatorId);
         User friend = getById(targetId);
         Set<Long> friendsOfFriend = friend.getFriends();
         friendsOfFriend.remove(initiatorId);
         friend.setFriends(friendsOfFriend);
         userStorage.update(friend);
-        log.info("Друг успешно удалён: {}", user);
-        return UserMapper.mapToUserDto(user);
+        return user;
     }
 
     public List<FriendDto> getAllFriends(long id) {
@@ -75,7 +73,6 @@ public class UserService {
     }
 
     public List<User> getAll() {
-        log.info("Возврат списка всех пользователей: {}", userStorage.getAll());
         return userStorage.getAll();
     }
 
@@ -88,7 +85,7 @@ public class UserService {
         return userOp.get();
     }
 
-    public UserDto add(User user) {
+    public User add(User user) {
         String login = user.getLogin();
         if (login.contains(" ")) {
             log.error("Логин не может содержать пробелы");
@@ -98,10 +95,10 @@ public class UserService {
             log.debug("Имя пустое, использование логина для инициализации");
             user.setName(login);
         }
-        return UserMapper.mapToUserDto(userStorage.add(user));
+        return userStorage.add(user);
     }
 
-    public UserDto update(User user) {
+    public User update(User user) {
         String login = user.getLogin();
         if (login.contains(" ")) {
             log.error("Логин не может содержать пробелы");
@@ -111,13 +108,10 @@ public class UserService {
             log.debug("Имя == null, использование логина для инициализации");
             user.setName(login);
         }
-        User updated = userStorage.update(user);
-        log.info("Данные успешно обновлены: {}", updated);
-        return UserMapper.mapToUserDto(updated);
+        return userStorage.update(user);
     }
 
     public void delete(long id) {
         userStorage.delete(id);
-        log.info("Пользователь с id = {} успешно удалён", id);
     }
 }

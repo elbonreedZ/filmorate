@@ -5,13 +5,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.storage.api.GenreStorage;
 
 import java.util.*;
 
 
 @Slf4j
 @Repository
-public class GenresDbStorage extends BaseDbStorage<Genre> {
+public class GenresDbStorage extends BaseDbStorage<Genre> implements GenreStorage {
     private static final String GET_GENRES_OF_FILM_QUERY = "SELECT g.id, g.name " +
             "FROM genre g " +
             "JOIN film_genres fg ON g.id = fg.genre_id " +

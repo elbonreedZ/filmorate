@@ -1,16 +1,26 @@
 package ru.yandex.practicum.filmorate.mappers;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import ru.yandex.practicum.filmorate.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dto.CreateFilmDto;
+import ru.yandex.practicum.filmorate.dto.ResponseFilmDto;
+import ru.yandex.practicum.filmorate.dto.UpdateFilmDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.stream.Collectors;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class FilmMapper {
-    public static FilmDto mapToFilmDto(Film film) {
-        FilmDto dto = new FilmDto();
+    public static Film mapNewFilmToFilm(CreateFilmDto dto) {
+        Film film = new Film();
+        film.setDescription(dto.getDescription());
+        film.setName(dto.getName());
+        film.setDuration(dto.getDuration());
+        film.setReleaseDate(dto.getReleaseDate());
+        film.setGenres(dto.getGenres());
+        film.setMpa(dto.getMpa());
+        return film;
+    }
+
+    public static ResponseFilmDto mapToResponseFilmDto(Film film) {
+        ResponseFilmDto dto = new ResponseFilmDto();
         dto.setId(film.getId());
         dto.setDescription(film.getDescription());
         dto.setName(film.getName());
@@ -20,4 +30,17 @@ public class FilmMapper {
         dto.setMpa(RatingMapper.mapToRatingDto(film.getMpa()));
         return dto;
     }
+
+    public static Film mapUpdateFilmToFilm(UpdateFilmDto dto) {
+        Film film = new Film();
+        film.setId(dto.getId());
+        film.setDescription(dto.getDescription());
+        film.setName(dto.getName());
+        film.setDuration(dto.getDuration());
+        film.setReleaseDate(dto.getReleaseDate());
+        film.setGenres(dto.getGenres());
+        film.setMpa(dto.getMpa());
+        return film;
+    }
+
 }

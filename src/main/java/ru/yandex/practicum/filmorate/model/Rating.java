@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Rating {
-    long id;
-    String name;
+    private long id;
+    private String name;
 }

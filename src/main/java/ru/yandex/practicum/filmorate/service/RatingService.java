@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dto.RatingDto;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mappers.RatingMapper;
 import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.storage.api.RatingStorage;
 import ru.yandex.practicum.filmorate.storage.dal.RatingDbStorage;
 
 import java.util.List;
@@ -17,14 +18,14 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class RatingService {
-    private final RatingDbStorage ratingDbStorage;
+    private final RatingStorage ratingStorage;
 
     public List<RatingDto> getAllRatings() {
-        return ratingDbStorage.getAllRatings().stream().map(RatingMapper::mapToRatingDto).collect(Collectors.toList());
+        return ratingStorage.getAllRatings().stream().map(RatingMapper::mapToRatingDto).collect(Collectors.toList());
     }
 
     public RatingDto getById(long id) {
-        Optional<Rating> rating = ratingDbStorage.getRatingById(id);
+        Optional<Rating> rating = ratingStorage.getRatingById(id);
         if (rating.isEmpty()) {
             log.error("Рейтинг не найден id = {}", id);
             throw new NotFoundException("Рейтинг не найден");

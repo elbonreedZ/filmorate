@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FriendService;
 import ru.yandex.practicum.filmorate.storage.api.UserStorage;
 
 import java.util.HashSet;
@@ -17,7 +18,7 @@ import java.util.Optional;
 @Repository
 public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
-    private final FriendsDbStorage friendsDbStorage;
+    private final FriendService friendService;
 
     private static final String INSERT_QUERY = "INSERT INTO users(email, login, name, birthday)" +
             "VALUES (?, ?, ?, ?)";
@@ -28,9 +29,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     private static final String GET_ALL_QUERY = "SELECT * FROM users";
 
-    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper, FriendsDbStorage friendsDbStorage) {
+    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper, FriendService friendService) {
         super(jdbc, mapper);
-        this.friendsDbStorage = friendsDbStorage;
+        this.friendService = friendService;
     }
 
     @Override
@@ -56,14 +57,14 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 user.getBirthday(),
                 user.getId()
         );
-        List<Long> existingFriendIds =  friendsDbStorage.getFriendsIds(user.getId());
+        List<Long> existingFriendIds =  friendService.getFriendsIds(user.getId());
 
         List<Long> friendsToAdd = user.getFriends().stream()
                 .filter(friendId -> !existingFriendIds.contains(friendId))
                 .toList();
 
         for (long friendId : friendsToAdd) {
-            friendsDbStorage.addFriend(user.getId(), friendId);
+            friendService.addFriend(user.getId(), friendId);
         }
 
         List<Long> friendsToRemove = existingFriendIds.stream()
@@ -71,7 +72,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 .toList();
 
         for (long friendId : friendsToRemove) {
-            friendsDbStorage.deleteFriend(user.getId(), friendId);
+            friendService.deleteFriend(user.getId(), friendId);
         }
         return user;
     }
@@ -92,7 +93,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
         User user;
         if (userOpt.isPresent()) {
             user = userOpt.get();
-            user.setFriends(new HashSet<>(friendsDbStorage.getFriendsIds(id)));
+            user.setFriends(new HashSet<>(friendService.getFriendsIds(id)));
             return Optional.of(user);
         }
         return Optional.empty();

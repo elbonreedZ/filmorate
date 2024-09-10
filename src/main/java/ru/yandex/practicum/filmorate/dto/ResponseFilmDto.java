@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class FilmDto {
+public class ResponseFilmDto {
     private long id;
     private String name;
     private String description;

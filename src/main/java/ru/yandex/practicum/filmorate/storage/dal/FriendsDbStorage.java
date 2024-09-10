@@ -5,12 +5,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.api.FriendsStorage;
 
 import java.util.List;
 
 @Repository
 @Slf4j
-public class FriendsDbStorage extends BaseDbStorage<User> {
+public class FriendsDbStorage extends BaseDbStorage<User> implements FriendsStorage {
     private static final String GET_ALL_FRIENDS_QUERY = "SELECT u.* FROM users u " +
             "JOIN relations r ON u.id = r.initiator_id " +
             "WHERE r.target_user_id = ? " +
@@ -46,11 +47,6 @@ public class FriendsDbStorage extends BaseDbStorage<User> {
             "    FROM relations " +
             "    WHERE initiator_id = ? AND status_id = (SELECT id FROM status_types WHERE type = 'CONFIRMED') " +
             ") AS friends ON u.id = friends.friend_id;";
-    private static final String CONFIRM_QUERY = "UPDATE relations " +
-            "SET status_id = (SELECT id FROM status_types WHERE type = 'CONFIRMED') " +
-            "WHERE initiator_id = ? AND target_user_id = ? " +
-            "AND status_id = (SELECT id FROM status_types WHERE type = 'UNCONFIRMED')";
-
 
     public FriendsDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
         super(jdbc, mapper);
@@ -68,10 +64,6 @@ public class FriendsDbStorage extends BaseDbStorage<User> {
         String insertQuery = "INSERT INTO relations (initiator_id, target_user_id, status_id) " +
                 "VALUES (?, ?, (SELECT id FROM status_types WHERE type = 'UNCONFIRMED'))";
         jdbc.update(insertQuery, initiatorId, targetUserId);
-    }
-
-    public void confirmFriendRequest(long initiatorId, long targetUserId) {
-        update(CONFIRM_QUERY, initiatorId, targetUserId);
     }
 
     public void deleteFriend(long userId, long friendId) {
