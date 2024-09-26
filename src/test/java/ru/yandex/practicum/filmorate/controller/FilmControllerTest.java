@@ -26,7 +26,15 @@ public class FilmControllerTest {
                 + "\"name\":\"Valid Film\","
                 + "\"description\":\"Valid description\","
                 + "\"releaseDate\":\"2022-01-01\","
-                + "\"duration\": 12"
+                + "\"duration\": 12,"
+                + "\"mpa\": {"
+                + "    \"id\": 1,"
+                + "    \"name\": \"G\""   // G - это один из примеров рейтинга, вы можете выбрать другой
+                + "},"
+                + "\"genres\": ["
+                + "    { \"id\": 1, \"name\": \"Comedy\" },"
+                + "    { \"id\": 2, \"name\": \"Drama\" }"
+                + "]"
                 + "}";
 
         this.mockMvc.perform(post("/films")
